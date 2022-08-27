@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Kühlschrank</title>
+</head>
+
+<body>
+<h3><a th:href="@{/}">Cocktails App</a> &gt; Kühlschrank</h3>
+<h2>Im Kühlschrank (von <span th:text="${username}"></span>)</h2>
+<ul>
+    <li th:each="fridgeModel : ${fridgeModels}" th:if="${fridgeModel.inFridge}">
+        <form method="post" style="display: inline">
+            <input type="hidden" name="id" th:value="${fridgeModel.ingredient.id}">
+            <button name="action" value="remove">-</button>
+        </form>
+        <a th:href="@{/ingredients/{id}(id=${fridgeModel.ingredient.id})}" th:text="${fridgeModel.ingredient.name}"></a>
+    </li>
+</ul>
+<h2>Nicht im Kühlschrank</h2>
+<ul>
+    <li th:each="fridgeModel : ${fridgeModels}" th:unless="${fridgeModel.inFridge}">
+        <form method="post" style="display: inline">
+            <input type="hidden" name="id" th:value="${fridgeModel.ingredient.id}">
+            <button name="action" value="add">+</button>
+        </form>
+        <a th:href="@{/ingredients/{id}(id=${fridgeModel.ingredient.id})}" th:text="${fridgeModel.ingredient.name}"></a>
+    </li>
+</ul>
+</body>
+
+</html>

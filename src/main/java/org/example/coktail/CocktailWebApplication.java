@@ -8,7 +8,6 @@ import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.*;
 import org.springframework.security.config.annotation.authentication.builders.*;
 import org.springframework.security.config.annotation.web.builders.*;
-import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.web.*;
 
 @SpringBootApplication
@@ -38,7 +37,7 @@ public class CocktailWebApplication {
                 .url("ldap://localhost:8389/dc=springframework,dc=org")
                 .and()
                 .passwordCompare()
-                .passwordEncoder(new BCryptPasswordEncoder())
+                .passwordEncoder(new CustomPasswordEncoder())
                 .passwordAttribute("userPassword");
     }
 

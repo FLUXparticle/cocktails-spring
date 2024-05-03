@@ -1,13 +1,14 @@
 package org.example.coktail;
 
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.boot.autoconfigure.domain.*;
 import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.*;
+import org.springframework.security.config.annotation.authentication.builders.*;
 import org.springframework.security.config.annotation.web.builders.*;
-import org.springframework.security.core.userdetails.*;
-import org.springframework.security.provisioning.*;
+import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.web.*;
 
 @SpringBootApplication
@@ -19,7 +20,7 @@ public class CocktailWebApplication {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests((requests) -> requests
-                        .mvcMatchers("/user/**").hasRole("USER")
+                        .mvcMatchers("/user/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin().and()
@@ -27,15 +28,18 @@ public class CocktailWebApplication {
                 .build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("test")
-                .password("test")
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .ldapAuthentication()
+                .userDnPatterns("uid={0},ou=people")
+                .groupSearchBase("ou=groups")
+                .contextSource()
+                .url("ldap://localhost:8389/dc=springframework,dc=org")
+                .and()
+                .passwordCompare()
+                .passwordEncoder(new BCryptPasswordEncoder())
+                .passwordAttribute("userPassword");
     }
 
     public static void main(String[] args) {

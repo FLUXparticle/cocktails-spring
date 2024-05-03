@@ -31,14 +31,11 @@ public class CocktailWebApplication {
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .ldapAuthentication()
-                .userDnPatterns("uid={0},ou=people")
-                .groupSearchBase("ou=groups")
+                .userDnPatterns("uid={0},cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org")
                 .contextSource()
-                .url("ldap://localhost:8389/dc=springframework,dc=org")
-                .and()
-                .passwordCompare()
-                .passwordEncoder(new CustomPasswordEncoder())
-                .passwordAttribute("userPassword");
+                .url("ldap://ipa.demo1.freeipa.org:389")
+                .managerDn("uid=admin,cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org")
+                .managerPassword("Secret123");
     }
 
     public static void main(String[] args) {

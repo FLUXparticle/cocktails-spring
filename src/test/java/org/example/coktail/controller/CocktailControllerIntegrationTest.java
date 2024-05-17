@@ -15,7 +15,6 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-import static java.util.Collections.*;
 import static java.util.concurrent.CompletableFuture.*;
 import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
@@ -87,7 +86,13 @@ public class CocktailControllerIntegrationTest {
                 .bodyToMono(new ParameterizedTypeReference<List<Cocktail>>() {})
                 .block();
 
-        List<String> names = emptyList();
+        List<String> names = mapAsync(cocktails.stream(), cocktail -> getInstructions(cocktail.getId()).block())
+                .flatMap(List::stream)
+                .map(Instruction::getIngredient)
+                .map(Ingredient::getName)
+                .distinct()
+                .sorted()
+                .collect(toList());
 
         assertThat(names).containsExactly(EXPECTED_NAMES);
     }
@@ -97,7 +102,14 @@ public class CocktailControllerIntegrationTest {
         Flux<Cocktail> flux = doGetRequest("/flux/ingredients/" + PREISELBEERNEKTAR + "/cocktails")
                 .bodyToFlux(Cocktail.class);
 
-        List<String> names = emptyList();
+        List<String> names = flux.flatMap(cocktail -> getInstructions(cocktail.getId()).flux().flatMap(Flux::fromIterable))
+                .map(Instruction::getIngredient)
+                .map(Ingredient::getName)
+                .distinct()
+                .collectList()
+                .block();
+
+        names.sort(Comparator.naturalOrder());
 
         assertThat(names).containsExactly(EXPECTED_NAMES);
     }

@@ -2,6 +2,7 @@ package org.example.coktail.controller;
 
 import org.example.coktail.repository.*;
 import org.example.coktail.service.*;
+import org.springframework.data.domain.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -19,8 +20,9 @@ public class CocktailRestController {
     }
 
     @GetMapping(path = "/cocktails")
-    public Collection<Cocktail> getAllCocktails() {
-        return cocktailService.getAllCocktailsAsStream().collect(toList());
+    public Page<Cocktail> getCocktails(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int pageSize) {
+        return cocktailService.getCocktailsAsPage(page, pageSize);
     }
 
     @GetMapping("/cocktails/{id}")

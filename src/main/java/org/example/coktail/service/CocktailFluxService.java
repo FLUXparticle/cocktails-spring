@@ -1,6 +1,7 @@
 package org.example.coktail.service;
 
 import org.example.coktail.repository.*;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.*;
 import reactor.core.publisher.*;
 
@@ -75,6 +76,10 @@ public class CocktailFluxService {
 
     private static <T> Flux<T> delayedFlux(Collection<T> collection) {
         return Flux.fromIterable(collection).delayElements(Duration.ofMillis(DELAY));
+    }
+
+    public Page<Cocktail> getCocktailsAsPage(int page, int pageSize) {
+        return cocktailRepository.findAll(PageRequest.of(page, pageSize));
     }
 
 }

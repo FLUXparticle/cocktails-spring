@@ -1,0 +1,12 @@
+<div>
+    <button (click)="setPage(page.number - 1)" [disabled]="page.first">Previous</button>
+    <span>Seite {{ page.number + 1 }}</span>
+    <button (click)="setPage(page.number + 1)" [disabled]="page.last">Next</button>
+</div>
+
+<table>
+    <tr *ngFor="let cocktail of page.content">
+        <td>{{ cocktail.id }}</td>
+        <td>{{ cocktail.name }}</td>
+    </tr>
+</table>
